@@ -1,9 +1,10 @@
 const getRandomWord = require( "@cityssm/random-words").getRandomWord
 let word = getRandomWord();
 var inquirer = require('inquirer')
-console.log(word)
-
+//console.log(word)
+let guessCount = 0;
 let gameWord =word.split("");
+const chalk = require('chalk')
 
 let gameBoard =[]
 word.split("").forEach(element => {
@@ -11,6 +12,24 @@ word.split("").forEach(element => {
 
 });
 //console.log( gameBoard.join(" "))
+function replaceLetter(answer,match,guessCount){       
+    if(gameWord.indexOf(answer) !== -1){
+              
+      gameBoard[gameWord.indexOf(answer)] = answer
+      gameWord[gameWord.indexOf(answer)] = "_"
+      match++
+    //   console.log("gameBoard", gameBoard)
+    //   console.log("gameWord", gameWord)
+      replaceLetter(answer,match,guessCount)
+  }else if( match > 0){
+      
+  
+  }else{
+  
+      guessCount++
+  }
+  
+  }
 
 inquirer
 .prompt({
@@ -27,6 +46,7 @@ inquirer
     if(err.isTyError){
         console.log(err)
     }else{
+
         console.log(`Your word has ${word.length} letters`)
         wordGuess(word, gameBoard)
     }
@@ -42,17 +62,31 @@ function wordGuess(word, gameBoard){
         console.log(`Your word has ${word.length} letters`)
         let answer = answers.letter[0];
         console.log("answer",answer)
+        let match = 0;
+        //replaceLetter(answer,match,guessCount)
 
         if(gameWord.indexOf(answer) !== -1){
-            
-            gameBoard[gameWord.indexOf(answer)] = answer
-            gameWord[gameWord.indexOf(answer)] = "_"
+              
+            // gameBoard[gameWord.indexOf(answer)] = answer
+            // gameWord[gameWord.indexOf(answer)] = "_"
+            // match++
+            // console.log("gameBoard", gameBoard)
+            // console.log("gameWord", gameWord)
+            replaceLetter(answer,match,guessCount)
+        }else{
+            guessCount++
         }
-
-        console.log(gameBoard.join(" "))
+            // stop at guess count limit
+        //console.log(gameBoard.join(" "))
         if(gameBoard.join("")== word){
             console.log("you win")
+        }else if(guessCount >= hangman.length){
+            console.log(`The word was ${word}
+            GAME OVER`)
+
         }else{
+
+            console.log(chalk.red(hangman[guessCount]).concat(gameBoard.join(" ")))
           wordGuess(word, gameBoard)
         }
     })
@@ -64,3 +98,62 @@ function wordGuess(word, gameBoard){
         
     })
 }
+
+let hangman = [`
+  +---+
+  |   |
+      |
+      |
+      |
+      |
+=========
+`, `
+  +---+
+  |   |
+  O   |
+      |
+      |
+      |
+=========
+`, `
+  +---+
+  |   |
+  O   |
+  |   |
+      |
+      |
+=========
+`, `
+  +---+
+  |   |
+  O   |
+ /|   |
+      |
+      |
+=========
+`, `
+  +---+
+  |   |
+  O   |
+ /|\\\  |
+      |
+      |
+=========
+`, `
+  +---+
+  |   |
+  O   |
+ /|\\\  |
+ /    |
+      |
+=========
+`, `
+  +---+
+  |   |
+  O   |
+ /|\\\  |
+ / \\\  |
+      |
+=========
+`];
+
